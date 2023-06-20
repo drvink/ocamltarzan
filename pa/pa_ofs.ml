@@ -398,14 +398,16 @@ module Generate_of_sexp = struct
   (* Generate matching code for well-formed S-expressions wrt. sum types *)
   let rec mk_good_sum_matches _loc = function
     | <:ctyp< $uid:cnstr$ >> ->
-        let lccnstr = String.copy cnstr in
-        lccnstr.[0] <- Char.lowercase lccnstr.[0];
+        let lccnstr = Bytes.of_string cnstr in
+        lccnstr.[0] <- Char.lowercase @@ Bytes.get lccnstr 0;
+        let lccnstr = Bytes.to_string in
         <:match_case<
           Sexp.Atom ($str:cnstr$) -> $uid:cnstr$
         >>
     | <:ctyp< $uid:cnstr$ of $tps$ >> ->
-        let lccnstr = String.copy cnstr in
-        lccnstr.[0] <- Char.lowercase lccnstr.[0];
+        let lccnstr = Bytes.of_string cnstr in
+        lccnstr.[0] <- Char.lowercase @@ Bytes.get lccnstr 0;
+        let lccnstr = Bytes.to_string in
         <:match_case<
           (Sexp.List
             [Sexp.Atom ($str:cnstr$ as tag) ::
@@ -423,16 +425,18 @@ module Generate_of_sexp = struct
      wrt. sum types *)
   let rec mk_bad_sum_matches _loc = function
     | <:ctyp< $uid:cnstr$ >> ->
-        let lccnstr = String.copy cnstr in
-        lccnstr.[0] <- Char.lowercase lccnstr.[0];
+        let lccnstr = Bytes.of_string cnstr in
+        lccnstr.[0] <- Char.lowercase @@ Bytes.get lccnstr 0;
+        let lccnstr = Bytes.to_string in
         <:match_case<
           Sexp.List
             [Sexp.Atom ($str:cnstr$) :: _] as sexp ->
               Conv_error.stag_no_args _loc sexp
         >>
     | <:ctyp< $uid:cnstr$ of $_$ >> ->
-        let lccnstr = String.copy cnstr in
-        lccnstr.[0] <- Char.lowercase lccnstr.[0];
+        let lccnstr = Bytes.of_string cnstr in
+        lccnstr.[0] <- Char.lowercase @@ Bytes.get lccnstr 0;
+        let lccnstr = Bytes.to_string in
         <:match_case<
           Sexp.Atom ($str:cnstr$) as sexp ->
              Conv_error.stag_takes_args _loc sexp

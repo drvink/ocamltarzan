@@ -1,13 +1,9 @@
 
-MAKESUBDIRS=lib-sexp pa
+MAKESUBDIRS=lib-sexp pa common
 
-INCLUDES=-I external/commons
+INCLUDES=-I common
 # commons.cma now depends on multiple libs :(
-LIBS=external/calendar/calendarLib.cma external/easy-format/easy_format.cma \
-  external/ppx_deriving/runtime/ppx_deriving_runtime.cma external/ppx_deriving_yojson/runtime/ppx_deriving_yojson_runtime.cma \
-  external/biniou/biniou.cma external/yojson/yojson.cma \
-  external/easy_logging/easy_logging.cma external/easy_logging_yojson/easy_logging_yojson.cma \
-  external/commons/commons.cma
+LIBS=common/common.cma
 SYSLIBS=unix.cma str.cma
 
 all:
@@ -17,8 +13,8 @@ opt:
 	$(MAKE) rec.opt
 
 # -unsafe-string not anymore available in 4.12
-ocamltarzan: ocamltarzan.ml 
-	ocamlc -o $@ -unsafe-string -custom $(INCLUDES) $(SYSLIBS) $(LIBS)  ocamltarzan.ml 
+ocamltarzan: ocamltarzan.ml
+	ocamlc -o $@ -custom $(INCLUDES) $(SYSLIBS) $(LIBS) $^
 clean::
 	rm -f ocamltarzan
 

@@ -1,4 +1,4 @@
-OCAMLC=ocamlc -c -pp "camlp4orf " -I +camlp4 -unsafe-string
+OCAMLC=ocamlc -c -pp "camlp4orf " -I +camlp4
 OCAMLDEP=ocamldep -pp "camlp4orf " -I +camlp4
 
 ##############################################################################

@@ -1,0 +1,13 @@
+common.cmo : \
+    common.cmi
+common.cmx : \
+    common.cmi
+common.cmi :
+common2.cmo : \
+    common.cmi \
+    common2.cmi
+common2.cmx : \
+    common.cmx \
+    common2.cmi
+common2.cmi : \
+    common.cmi

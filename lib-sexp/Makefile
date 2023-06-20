@@ -64,7 +64,7 @@ SYSLIBS= str.cma unix.cma bigarray.cma num.cma
 ##############################################################################
 
 #dont use -custom, it makes the bytecode unportable.
-OCAMLCFLAGS= -g -dtypes -unsafe-string # -w A
+OCAMLCFLAGS= -g -dtypes # -w A
 #-for-pack Sexplib
 #-unsafe-string not available in 4.12
 

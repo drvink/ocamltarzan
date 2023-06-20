@@ -173,7 +173,7 @@ module type S = sig
 
   val input_sexps :
     ?text_line : int -> ?text_char : int -> ?buf_pos : int ->
-    ?buf : string -> in_channel -> t list
+    ?buf : bytes -> in_channel -> t list
   (** [input_sexps ?text_line ?text_char ?buf_pos ??buf ic] parses
       whitespace separated S-expressions from input channel [ic] until
       EOF is reached.  Faster than the scan-functions.  NOTE: [buf_pos]
@@ -187,14 +187,14 @@ module type S = sig
 
   val input_rev_sexps :
     ?text_line : int -> ?text_char : int -> ?buf_pos : int ->
-    ?buf : string -> in_channel -> t list
+    ?buf : bytes -> in_channel -> t list
   (** [input_rev_sexps ?buf ic] same as {!Sexp.input_sexps}, but returns a
       reversed list of S-expressions, which is slightly more efficient. *)
 
 
   (** {6 Loading} *)
 
-  val load_sexp : ?buf : string -> string -> t
+  val load_sexp : ?buf : bytes -> string -> t
   (** [load_sexp ?buf file] reads one S-expression from file [file] using
       buffer [buf] for storing intermediate data.  Ignores any trailing
       data.  Faster than the scan-functions.
@@ -203,7 +203,7 @@ module type S = sig
       @raise End_of_file if no S-expression could be read.
   *)
 
-  val load_sexps : ?buf : string -> string -> t list
+  val load_sexps : ?buf : bytes -> string -> t list
   (** [load_sexps file] reads a list of whitespace separated S-expressions
       from file [file] using buffer [buf] for storing intermediate data.
       Faster than the scan-functions.
@@ -212,7 +212,7 @@ module type S = sig
       @raise End_of_file if the last S-expression is incomplete.
   *)
 
-  val load_rev_sexps : ?buf : string -> string -> t list
+  val load_rev_sexps : ?buf : bytes -> string -> t list
   (** [load_rev_sexps file] same as {!Sexp.load_sexps}, but returns a
       reversed list of S-expressions, which is slightly more efficient. *)
 

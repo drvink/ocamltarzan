@@ -49,11 +49,11 @@ let maybe_esc_str str =
   if must_escape str then
     let estr = String.escaped str in
     let elen = String.length estr in
-    let res = String.create (elen + 2) in
-    String.blit estr 0 res 1 elen;
+    let res = Bytes.create (elen + 2) in
+    Bytes.blit_string estr 0 res 1 elen;
     res.[0] <- '"';
     res.[elen + 1] <- '"';
-    res
+    Bytes.unsafe_to_string res
   else str
 
 let pp_maybe_esc_str ppf str = pp_print_string ppf (maybe_esc_str str)
@@ -549,12 +549,12 @@ let reraise_parse_error pe global_pos =
   raise (ParseError new_pe)
 
 let input_sexp ?text_line ?text_char ?(buf_pos = 0) ic =
-  let buf = String.create 1 in
+  let buf = Bytes.create 1 in
   let rec loop this_parse =
     let c = input_char ic in
-    buf.[0] <- c;
+    Bytes.set buf 0 c;
     let parse_res =
-      try this_parse ~pos:0 ~len:1 buf
+      try this_parse ~pos:0 ~len:1 (Bytes.to_string buf)
       with ParseError pe -> reraise_parse_error pe buf_pos
     in
     match parse_res with
@@ -566,15 +566,15 @@ let input_sexp ?text_line ?text_char ?(buf_pos = 0) ic =
 
 let input_rev_sexps
       ?text_line ?text_char
-      ?(buf_pos = 0) ?(buf = String.create 8192) ic =
+      ?(buf_pos = 0) ?(buf = Bytes.create 8192) ic =
   let rev_sexps_ref = ref [] in
-  let buf_len = String.length buf in
+  let buf_len = Bytes.length buf in
   let is_incomplete_ref = ref false in
   let buf_pos_ref = ref buf_pos in
   let rec loop this_parse pos len =
     if len > 0 then
       let parse_res =
-        try this_parse ~pos ~len buf
+        try this_parse ~pos ~len @@ Bytes.to_string buf
         with ParseError pe -> reraise_parse_error pe !buf_pos_ref
       in
       match parse_res with
@@ -629,9 +629,9 @@ let of_string str =
   of_string_bstr "Sexp.of_string" parse " " String.length String.sub str
 
 let get_bstr_sub_str bstr pos len =
-  let str = String.create len in
+  let str = Bytes.create len in
   for i = 0 to len - 1 do str.[i] <- bstr.{pos + i} done;
-  str
+  Bytes.unsafe_to_string str
 
 let bstr_ws_buf = Array1.create char c_layout 1
 let () = bstr_ws_buf.{0} <- ' '
@@ -642,14 +642,14 @@ let of_bstr bstr =
 
 (* Loading *)
 
-let load_sexp ?(buf = String.create 8192) file =
-  let buf_len = String.length buf in
+let load_sexp ?(buf = Bytes.create 8192) file =
+  let buf_len = Bytes.length buf in
   let ic = open_in file in
   let rec loop this_parse =
     let len = input ic buf 0 buf_len in
     if len = 0 then raise End_of_file
     else
-      match this_parse ~pos:0 ~len buf with
+      match this_parse ~pos:0 ~len (Bytes.to_string buf) with
       | Done (sexp, _) -> sexp
       | Cont (_, this_parse) -> loop this_parse
   in
